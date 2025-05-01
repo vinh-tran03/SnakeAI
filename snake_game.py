@@ -75,21 +75,28 @@ class SnakeGame:
         return self.get_state_as_array(), reward, done
 
     def get_state_as_array(self):
-        grid_width = self.width // self.block_size
-        grid_height = self.height // self.block_size
+        grid_width = self.width // 10
+        grid_height = self.height // 10
         state = np.zeros((grid_height, grid_width, 3), dtype=np.uint8)
 
-        for x, y in self.snake_body:
-            gx, gy = x // self.block_size, y // self.block_size
-            state[gy, gx, 0] = 1  # snake body
+        for pos in self.snake_body:
+            gx = pos[0] // 10
+            gy = pos[1] // 10
+            if 0 <= gx < grid_width and 0 <= gy < grid_height:
+                state[gy, gx, 0] = 1  # snake body
 
-        hx, hy = self.snake_pos
-        state[hy // self.block_size, hx // self.block_size, 2] = 1  # snake head
+        fx = self.food_pos[0] // 10
+        fy = self.food_pos[1] // 10
+        if 0 <= fx < grid_width and 0 <= fy < grid_height:
+            state[fy, fx, 1] = 1  # food
 
-        fx, fy = self.food_pos
-        state[fy // self.block_size, fx // self.block_size, 1] = 1  # food
+        hx = self.snake_pos[0] // 10
+        hy = self.snake_pos[1] // 10
+        if 0 <= hx < grid_width and 0 <= hy < grid_height:
+            state[hy, hx, 2] = 1  # snake head
 
         return state
+
 
     def render(self):
         self.display.fill(self.black)

@@ -6,3 +6,4 @@ tensorboard
 torch
 torchvision
 torchaudio
+shimmy>=2.0

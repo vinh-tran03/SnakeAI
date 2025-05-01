@@ -30,7 +30,7 @@ env = SnakeEnv()
 model = DQN("MlpPolicy", env, verbose=0, tensorboard_log="./tensorboard_snake/")
 
 # Train the model with the logger callback
-model.learn(total_timesteps=500_000, callback=TrainLoggerCallback(check_freq=5000))
+model.learn(total_timesteps=100_000, callback=TrainLoggerCallback(check_freq=5000))
 
 # Save the trained model
 model.save("dqn_snake")

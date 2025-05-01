@@ -6,31 +6,37 @@ import time
 # Initialize Pygame and fonts for rendering text
 pygame.init()
 
-# Load environment
+# Load environment and trained model
 env = SnakeEnv()
-
-# Load trained model
 model = DQN.load("dqn_snake")
+
+# Set up font for displaying text
+font = pygame.font.SysFont('Arial', 25)
+
+# Initialize episode counter
+episode = 1
 
 # Reset environment
 obs = env.reset()
 done = False
 
-# Set up font for displaying text (reward score)
-font = pygame.font.SysFont('Arial', 25)
-
 # Start game loop
 while True:
     action, _ = model.predict(obs)
     obs, reward, done, info = env.step(action)
-    env.render()  # Make sure SnakeGame's render() calls pygame.display.update()
+    env.render()
 
-    # Display the current reward on the screen
-    reward_text = font.render(f'Reward: {reward}', True, (255, 255, 255))  # White text
-    env.display.blit(reward_text, (10, 10))  # Place it at the top-left of the screen
+    # Render reward and episode ("life") on screen
+    reward_text = font.render(f'Reward: {reward}', True, (255, 255, 255))
+    life_text = font.render(f'Life: {episode}', True, (255, 255, 255))
 
-    pygame.display.update()  # Update the Pygame window to show the text
-    time.sleep(0.05)  # Optional: slow it down so you can see it play
+    # Blit to the display (must come after env.render() to not get erased)
+    env.game.display.blit(reward_text, (10, 10))
+    env.game.display.blit(life_text, (10, 40))
+
+    pygame.display.update()
+    time.sleep(0.05)
 
     if done:
+        episode += 1
         obs = env.reset()
