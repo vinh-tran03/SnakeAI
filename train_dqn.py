@@ -1,42 +1,36 @@
-import gym
-import numpy as np
 from stable_baselines3 import DQN
-from stable_baselines3.common.env_checker import check_env
-from snake_env import SnakeEnv  # make sure snake_env.py and snake_game.py are in the same folder
+from snake_env import SnakeEnv
+from stable_baselines3.common.callbacks import BaseCallback
+import numpy as np
 
-# Create and check the environment
+# Custom callback to log training progress
+class TrainLoggerCallback(BaseCallback):
+    def __init__(self, check_freq=1000, verbose=1):
+        super().__init__(verbose)
+        self.check_freq = check_freq
+        self.episode_rewards = []
+
+    def _on_step(self) -> bool:
+        # Called at each step
+        if self.locals.get('done'):
+            reward = self.locals.get('rewards')
+            self.episode_rewards.append(reward)
+
+        # Print progress every check_freq steps
+        if self.n_calls % self.check_freq == 0:
+            mean_reward = np.mean(self.episode_rewards[-100:]) if self.episode_rewards else 0
+            print(f"Step: {self.n_calls} | Mean Reward (last 100): {mean_reward:.2f}")
+        return True
+
+
+# Create environment
 env = SnakeEnv()
-check_env(env, warn=True)  # Optional but useful for debugging
 
-# Train the model
-model = DQN(
-    policy="CnnPolicy",   # Because observation is a grid (image-like)
-    env=env,
-    verbose=1,
-    learning_rate=1e-4,
-    buffer_size=50000,
-    learning_starts=1000,
-    batch_size=32,
-    tau=1.0,
-    gamma=0.99,
-    train_freq=4,
-    target_update_interval=1000,
-    exploration_fraction=0.1,
-    exploration_final_eps=0.02,
-    tensorboard_log="./snake_tensorboard/"
-)
+# Instantiate the model
+model = DQN("MlpPolicy", env, verbose=0, tensorboard_log="./tensorboard_snake/")
 
-# Start training
-model.learn(total_timesteps=500_000)
+# Train the model with the logger callback
+model.learn(total_timesteps=500_000, callback=TrainLoggerCallback(check_freq=5000))
 
-# Save the model
+# Save the trained model
 model.save("dqn_snake")
-
-# Optional: evaluate the trained agent
-obs = env.reset()
-for _ in range(1000):
-    action, _states = model.predict(obs)
-    obs, reward, done, info = env.step(action)
-    env.render()
-    if done:
-        obs = env.reset()
