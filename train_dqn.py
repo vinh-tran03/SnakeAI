@@ -37,7 +37,7 @@ model = DQN(
     env,
     learning_rate=1e-4,           # Try lower learning rate
     buffer_size=50_000,           # Larger replay buffer
-    learning_starts=1_000,        # Start training after 1000 steps
+    learning_starts=2_000,        # Start training after # steps
     batch_size=64,                # Use larger batch size for training
     tau=0.005,                    # Soft update rate of the target network
     gamma=0.99,                   # Discount factor for future rewards
