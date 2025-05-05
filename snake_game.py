@@ -59,7 +59,7 @@ class SnakeGame:
         # Eating food
         if self.snake_pos == self.food_pos:
             self.score += 1
-            reward = 10  # Higher reward for eating food
+            reward = 100  # Reward for eating food
             self.food_spawn = False
         else:
             self.snake_body.pop()

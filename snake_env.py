@@ -1,5 +1,5 @@
-from gym import Env
-from gym.spaces import Discrete, Box
+from gymnasium import Env
+from gymnasium.spaces import Discrete, Box
 from snake_game import SnakeGame
 import numpy as np
 
@@ -12,10 +12,14 @@ class SnakeEnv(Env):
 
     def step(self, action):
         state, reward, done = self.game.step(action)
-        return state, reward, done, {}
+        truncated = False  # You can handle this if needed
+        info = {}
+        return state, reward, done, truncated, info
 
-    def reset(self):
-        return self.game.reset()
+    def reset(self, *, seed=None, options=None):
+        state = self.game.reset()
+        info = {}
+        return state, info
 
-    def render(self, mode='human'):
+    def render(self):
         self.game.render()

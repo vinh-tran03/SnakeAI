@@ -1,6 +1,7 @@
 import numpy as np
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 from snake_env import SnakeEnv
 
@@ -26,29 +27,30 @@ class TrainLoggerCallback(BaseCallback):
 
 
 # Create the environment and wrap it in a vectorized environment
-env = DummyVecEnv([lambda: SnakeEnv()])
+env = DummyVecEnv([lambda: Monitor(SnakeEnv())])
 
 # Set policy network architecture
-policy_kwargs = dict(net_arch=[256, 256])
+policy_kwargs = dict(net_arch=[128, 128])
 
 # Define the DQN model with optimized parameters
 model = DQN(
     "MlpPolicy",  # Use MLP policy
     env,
-    learning_rate=1e-4,           # Try lower learning rate
+    learning_rate=5e-5,           # Try lower learning rate
     buffer_size=50_000,           # Larger replay buffer
-    learning_starts=2_000,        # Start training after # steps
+    learning_starts=10_000,        # Start training after # steps
     batch_size=64,                # Use larger batch size for training
     tau=0.005,                    # Soft update rate of the target network
     gamma=0.99,                   # Discount factor for future rewards
-    train_freq=4,                 # Frequency of training updates
-    target_update_interval=500,   # Update target network every 500 steps
-    exploration_fraction=0.4,     # Fraction of timesteps using random actions
+    train_freq=1,                 # Frequency of training updates
+    target_update_interval=100,   # Update target network every 500 steps
+    exploration_fraction=0.9,     # Fraction of timesteps using random actions
     exploration_initial_eps=1.0,
-    exploration_final_eps=0.05,   # Final epsilon for epsilon-greedy strategy
+    exploration_final_eps=0.1,   # Final epsilon for epsilon-greedy strategy
     policy_kwargs=policy_kwargs,
     verbose=1,
     tensorboard_log="./tensorboard_snake/",  # TensorBoard logging for monitoring
+    device="cuda",
 )
 
 # Train the model with the logger callback
