@@ -1,40 +1,38 @@
 import pygame
 from stable_baselines3 import DQN
+from stable_baselines3.common.vec_env import DummyVecEnv
 from snake_env import SnakeEnv
 import time
 
-# Initialize Pygame and fonts for rendering text
 pygame.init()
 
-# Load environment and trained model
-env = SnakeEnv()
+# Load model and wrap env in DummyVecEnv
+env = DummyVecEnv([lambda: SnakeEnv()])
 model = DQN.load("dqn_snake")
 
-# Set up font for displaying text
 font = pygame.font.SysFont('Arial', 25)
-
-# Initialize episode counter
 episode = 1
 
-# Reset environment
 obs = env.reset()
 done = False
 
-# Start game loop
 while True:
     action, _ = model.predict(obs)
-    obs, reward, done, info = env.step(action)
-    env.render()
+    obs, reward, done, _ = env.step(action)
 
-    # Render reward and episode ("life") on screen
+    reward = reward[0]
+    done = done[0]
+
+    # Render the game
+    env.envs[0].render()
+
+    # Overlay text
     reward_text = font.render(f'Reward: {reward}', True, (255, 255, 255))
     life_text = font.render(f'Life: {episode}', True, (255, 255, 255))
-
-    # Blit to the display (must come after env.render() to not get erased)
-    env.game.display.blit(reward_text, (10, 10))
-    env.game.display.blit(life_text, (10, 40))
-
+    env.envs[0].game.display.blit(reward_text, (10, 10))
+    env.envs[0].game.display.blit(life_text, (10, 40))
     pygame.display.update()
+
     time.sleep(0.05)
 
     if done:

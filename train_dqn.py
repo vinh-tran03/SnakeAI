@@ -50,7 +50,7 @@ model = DQN(
     policy_kwargs=policy_kwargs,
     verbose=1,
     tensorboard_log="./tensorboard_snake/",  # TensorBoard logging for monitoring
-    device="cuda",
+    #device="cuda",
 )
 
 # Train the model with the logger callback
