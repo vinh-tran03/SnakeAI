@@ -2,7 +2,7 @@ import pygame, sys, random
 import numpy as np
 
 class SnakeGame:
-    def __init__(self, width=720, height=480, block_size=10, difficulty=25):
+    def __init__(self, width=450, height=450, block_size=10, difficulty=25):
         pygame.init()
         self.width = width
         self.height = height

@@ -6,13 +6,16 @@ import numpy as np
 class SnakeEnv(Env):
     def __init__(self):
         super().__init__()
-        self.game = SnakeGame()
+        self.game = SnakeGame(width=450, height=450, block_size=10)  
         self.action_space = Discrete(4)
-        self.observation_space = Box(low=0, high=1, shape=(48, 72, 3), dtype=np.uint8)
+
+        # Dynamically determine observation space shape
+        initial_state = self.game.reset()
+        self.observation_space = Box(low=0, high=1, shape=initial_state.shape, dtype=np.uint8)
 
     def step(self, action):
         state, reward, done = self.game.step(action)
-        truncated = False  # You can handle this if needed
+        truncated = False  # Modify this if needed for time-limited episodes
         info = {}
         return state, reward, done, truncated, info
 
