@@ -1,3 +1,4 @@
+#snake_env.py
 from gymnasium import Env
 from gymnasium.spaces import Discrete, Box
 from snake_game import SnakeGame
