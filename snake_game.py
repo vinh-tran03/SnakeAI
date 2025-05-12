@@ -118,16 +118,13 @@ class SnakeGame:
         distance_travelled = abs(self.snake_pos[0] - self.start_pos[0]) + abs(self.snake_pos[1] - self.start_pos[1])
         reward += distance_travelled // 10
 
-        # ----------------------
         # Circle movement check
-        # ----------------------
         self.recent_positions.append(tuple(self.snake_pos))
         if len(self.recent_positions) > self.max_recent:
             self.recent_positions.pop(0)
 
         if self.recent_positions.count(tuple(self.snake_pos)) > 2:
             reward -= 5  # Penalty for looping
-        # ----------------------
 
         return self.get_state_as_array(), reward, done
 
